@@ -1,6 +1,6 @@
 import Qs from "qs";
 import axios from "axios";
-import Utils from "../utils";
+import Utils from "@/utils";
 
 /**
  * 网络请求业务接口
@@ -64,21 +64,27 @@ export function callApi(params) {
         if (isload) {
           Utils.loading(params.that, false);
         }
+        console.log(response);
         if (response.status === 200) {
-          if (Utils.val(response.data, 0, "result") > 0) {
-            if (params.success) {
+          var code = Utils.val(response.data, 0, "code");
+          if (code == 0) {
+            var data = Utils.val(response.data, {}, "data");
+            if (Utils.isEmptyObject(data)) {
+              let error = new Error("无法从服务端获取数据，请联系管理员！");
+              throw error;
+            } else if (params.success) {
               params.success(response.data.data, response.data);
             }
           } else {
             let error = new Error(
-              Utils.val(response.data, "系统错误!", "message")
+              Utils.val(response.data, "请求发生错误!", "message")
             );
             error.response = response.data;
             throw error;
           }
         } else {
-          let error = new Error(response.statusText + " " + response.status);
-          error.response = response.data;
+          let error = new Error("发生网络错误！" + response.status);
+          error.response = { code: response.status, data: response.data };
           throw error;
         }
       })

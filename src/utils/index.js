@@ -370,7 +370,7 @@ const Utils = {
       if (isopen) {
         msg = msg ? msg : "加载中...";
         that.$toast.loading({
-          mask: false,
+          mask: true,
           message: msg,
           forbidClick: false,
           duration: 0
@@ -389,13 +389,15 @@ const Utils = {
    */
   error: function(that, error) {
     if (that) {
-      that.$toast(error);
+      var code = error.response ? " 错误码:" + error.response.code : "";
+      that.$toast(error.message + code);
     } else {
       throw new Error("that 为必填参数");
     }
   },
   /**
    * 统一获取页面显示值的方法，统一处理了返回值避免页面显示出现有问题的信息
+   * @example val(data,'发生错误','message')   获取data里面message的内容，若没有  则返回“发生错误”
    * */
   val: function() {
     var temp = "";

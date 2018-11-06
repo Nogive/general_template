@@ -10,8 +10,6 @@ import { requestAuthCode } from "@/common/js/ding";
 export default {
   name: 'App',
   created(){
-    //console.log(this.Utils);
-    //console.log(this.constants);
     this._initEnvironment();
   },
   methods:{

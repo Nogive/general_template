@@ -2,13 +2,14 @@
   <div class="example">
     <van-button type="primary"  plain @click="takePhoto">测试拍照</van-button>
     <van-button type="primary"  plain @click="getGPS">测试GPS</van-button>
+    <van-button @click="testAxios">testAxios</van-button>
     <van-button @click="show">show</van-button>
-    <van-button @click="hide">hide</van-button>
   </div>
 </template>
 
 <script>
 import { uploadImageFromCamera} from "@/common/js/ding";
+import {callApi} from "@/server/axios";
 export default {
   name: 'HelloWorld',
   data () {
@@ -33,11 +34,18 @@ export default {
     getGPS(){
       console.log('获取GPS');
     },
-    show(){
-      this.Utils.loading(this,true,'请求中');
+    testAxios(){
+      callApi({
+        that:this,
+        url:"http://x.waiqin.co/api/captcha",
+        type:"GET",
+        success:function(data){
+          console.log(data);
+        }
+      })
     },
-    hide(){
-      this.Utils.loading(this,false);
+    show(){
+      this.Utils.loading(this,true);
     }
   }
 }
