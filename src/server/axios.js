@@ -1,7 +1,16 @@
 import Qs from "qs";
 import axios from "axios";
 import Utils from "@/utils";
-
+const apiCode = {
+  ok: 200,
+  success: 0,
+  noAuth: 401,
+  noPermission: 403,
+  error: 400,
+  notFound: 404,
+  internalError: 500,
+  serverError: 502
+};
 /**
  * 网络请求业务接口
  * params {
@@ -65,9 +74,9 @@ export function callApi(params) {
           Utils.loading(params.that, false);
         }
         console.log(response);
-        if (response.status === 200) {
-          var code = Utils.val(response.data, 0, "code");
-          if (code == 0) {
+        if (response.status === apiCode.ok) {
+          var code = Utils.val(response.data, -1, "code");
+          if (code == apiCode.success) {
             var data = Utils.val(response.data, {}, "data");
             if (Utils.isEmptyObject(data)) {
               let error = new Error("无法从服务端获取数据，请联系管理员！");
@@ -82,8 +91,28 @@ export function callApi(params) {
             error.response = response.data;
             throw error;
           }
-        } else {
-          let error = new Error("发生网络错误！" + response.status);
+        }else if(response.status === apiCode.noAuth){
+          let error = new Error("身份验证已过期，请重新登录！");
+          error.response = { code: response.status, data: response.data };
+          throw error;
+        }else if(response.status === apiCode.noPermission){
+          let error = new Error("抱歉！您没有权限访问，请联系管理员。");
+          error.response = { code: response.status, data: response.data };
+          throw error;
+        }else if(response.status === apiCode.notFound){
+          let error = new Error("您访问的地址不存在！");
+          error.response = { code: response.status, data: response.data };
+          throw error;
+        }else if(response.status === apiCode.internalError){
+          let error = new Error("服务器内部错误！");
+          error.response = { code: response.status, data: response.data };
+          throw error;
+        } else if(response.status === apiCode.serverError){
+          let error = new Error("请确认服务器是否启动！");
+          error.response = { code: response.status, data: response.data };
+          throw error;
+        }else {
+          let error = new Error("发生网络错误！");
           error.response = { code: response.status, data: response.data };
           throw error;
         }
