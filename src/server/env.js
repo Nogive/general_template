@@ -11,13 +11,13 @@ let cancleHTTP = []; // 取消请求头设置；
 console.log(process.env.NODE_ENV);
 
 if (process.env.NODE_ENV === "development") {
-  baseUrl = "http://localhost:8080/";
+  baseUrl = "http://x.waiqin.co/api/";
   DEBUG = true;
 } else if (process.env.NODE_ENV === "production") {
-  baseUrl = "http://xField.co:8080/api/";
+  baseUrl = "http://x.waiqin.co/api/";
   DEBUG = false;
 } else if (process.env.NODE_ENV === "testing") {
-  baseUrl = "http://xField.co:8080/api/";
+  baseUrl = "http://x.waiqin.co/api/";
   DEBUG = false;
 }
 window.BASEURL = baseUrl;
