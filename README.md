@@ -1,4 +1,5 @@
-# info
+# general_template for Vue
+#include utils  filters nativeUtils(dingding,cordova...) ...
 
 > A Vue.js project
 
