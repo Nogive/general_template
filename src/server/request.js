@@ -8,6 +8,7 @@ import Utils from "../utils";
  *     that: 当前请求网络的页面this  必填
  *     url: 网络请求的URL 必填
  *     data: 请求接口所需要的参数 默认 {'agentid':当前登录的账户id}
+ *     dataType:请求接口的参数类型(raw formdata) 默认 raw
  *     isload: 是否出现loading框 默认 true 出现
  *     type：POST or GET  网络请求方式 默认  POST
  *     headers: 请求的头部参数，默认 {}
@@ -18,7 +19,6 @@ import Utils from "../utils";
  *     success: 接口数据正常回调页面处理逻辑
  *     error: 接口数据错误回调页面处理逻辑
  * }
- *
  * @param params
  */
 export function callApi(params) {
@@ -52,7 +52,7 @@ export function callApi(params) {
       ],
       timeout: params.timeout ? params.timeout : 100000,
       responseType: params.responseType ? params.responseType : "json",
-      data: Qs.stringify(params.data)
+      data: params.dataType ? Qs.stringify(params.data) : params.data
     };
 
     if (isload) {
