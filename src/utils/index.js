@@ -642,6 +642,28 @@ const Utils = {
         }
       );
     });
+  },
+  /**
+   * 初始化经纬度对象 仅针对高德地图  需载入amap
+   * @method initLngLat
+   * @param lng 经度
+   * @param lat 纬度
+   * @return obj
+   */
+  initLngLat: function(lng, lat) {
+    return new AMap.LngLat(lng, lat);
+  },
+  /**
+   * 根据经纬度计算两点之间的距离
+   * @method calculateDistance
+   * @param lng 经度
+   * @param lat 纬度
+   * @return obj
+   */
+  calculateDistance: function(lng1, lat1, lng2, lat2) {
+    let start = this.initLngLat(lng1, lat1);
+    let end = this.initLngLat(lng2, lat2);
+    return Math.round(start.distance(end));
   }
 };
 export default Utils;
