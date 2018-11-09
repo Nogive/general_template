@@ -547,12 +547,12 @@ const Utils = {
     oScript.type = "text/javascript";
     oScript.async = true;
     oScript.src = url;
-    /* 
-    ** script标签的onload和onreadystatechange事件 
-    ** IE6/7/8支持onreadystatechange事件 
-    ** IE9/10支持onreadystatechange和onload事件 
-    ** Firefox/Chrome/Opera支持onload事件 
-    */
+    /*
+     ** script标签的onload和onreadystatechange事件
+     ** IE6/7/8支持onreadystatechange事件
+     ** IE9/10支持onreadystatechange和onload事件
+     ** Firefox/Chrome/Opera支持onload事件
+     */
 
     // 判断IE8及以下浏览器
     var isIE = !-[1];
@@ -664,6 +664,25 @@ const Utils = {
     let start = this.initLngLat(lng1, lat1);
     let end = this.initLngLat(lng2, lat2);
     return Math.round(start.distance(end));
+  },
+  /**
+   * 打开vconsole
+   * @method openVconsole
+   */
+  openVconsole: function() {
+    let url =
+      "http://maimang-public.oss-cn-hangzhou.aliyuncs.com/vconsole.min.js";
+    this.createScript(url, function() {
+      var vConsole = new VConsole();
+      Vue.prototype.vConsole = vConsole;
+    });
+  },
+  closeVConsole: function(that) {
+    if (that) {
+      that.vConsole.destroy();
+    } else {
+      throw new Error("that为必填参数");
+    }
   }
 };
 export default Utils;
