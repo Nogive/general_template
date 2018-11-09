@@ -1,5 +1,34 @@
 /**## native sdk 结合cordova*/
 /**
+ * 初始化 cordova
+ */
+function cordovaInitialize(that) {
+  document.addEventListener(
+    "deviceready",
+    function() {
+      that.$toast("device ready");
+    },
+    true
+  );
+  document.addEventListener(
+    "pause",
+    function() {
+      console.log("pause");
+      that.$store.dispatch("changeAppState", "pause");
+    },
+    false
+  );
+  document.addEventListener(
+    "resume",
+    function() {
+      console.log("resume");
+      that.$store.dispatch("changeAppState", "resume");
+    },
+    false
+  );
+}
+
+/**
  * 拍照
  * @method takePhoto
  * @param onSuccess 拍照成功的回调
@@ -145,6 +174,7 @@ function savePhoto(options) {
 }
 
 export {
+  cordovaInitialize,
   takePhoto,
   startLocate,
   stopLocate,
