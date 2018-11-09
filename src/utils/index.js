@@ -6,26 +6,14 @@ import axios from "axios";
 var Local = {
   local: window.localStorage,
   set: function(attr, value) {
-    if (typeof value === "object") {
-      var temp = this.get(attr);
-      for (var key in value) {
-        if (value[key] == null) {
-          temp.delete(key);
-        } else {
-          temp[key] = JSON.stringify(value[key]);
-        }
-      }
-      this.local[attr] = JSON.stringify(temp);
-    } else {
-      this.local[attr] = value;
-    }
+    this.local.setItem(attr, JSON.stringify(value));
   },
   get: function(attr) {
     let temp = this.local.getItem(attr);
     try {
-      temp = temp ? JSON.parse(temp) : {};
+      temp = temp ? JSON.parse(temp) : null;
     } catch (e) {
-      temp = {};
+      temp = null;
     }
     return temp;
   },
@@ -40,26 +28,14 @@ var Local = {
 var Session = {
   session: window.sessionStorage,
   set: function(attr, value) {
-    if (typeof value === "object") {
-      var temp = this.get(attr);
-      for (var key in value) {
-        if (value[key] == null) {
-          temp.delete(key);
-        } else {
-          temp[key] = JSON.stringify(value[key]);
-        }
-      }
-      this.session[attr] = JSON.stringify(temp);
-    } else {
-      this.session[attr] = value;
-    }
+    this.session.setItem(attr, JSON.stringify(value));
   },
   get: function(attr) {
     let temp = this.session.getItem(attr);
     try {
-      temp = temp ? JSON.parse(temp) : {};
+      temp = temp ? JSON.parse(temp) : null;
     } catch (e) {
-      temp = {};
+      temp = null;
     }
     return temp;
   }
@@ -70,8 +46,40 @@ var Session = {
  * */
 var Cookie = {
   cookie: document.cookie,
-  set: function(attr, value, expires, path, domain, secure) {},
-  get: function(attr) {},
+  set: function(attr, value, expires, path, domain, secure) {
+    var cookieText = "";
+    expires = expires * 1000 * 60 * 60 * 24;
+    var expires_date = new Date(new Date().getTime() + expires);
+    cookieText += encodeURIComponent(attr) + "=" + encodeURIComponent(value);
+    if (expires) {
+      cookieText += "; expires=" + expires_date.toGMTString();
+    }
+    if (path) {
+      cookieText += "; path=" + path;
+    }
+    if (domain) {
+      cookieText += "; domain=" + domain;
+    }
+    if (secure) {
+      cookieText += "; secure";
+    }
+    this.cookie = cookieText;
+  },
+  get: function(attr) {
+    var cookieName = encodeURIComponent(attr) + "=";
+    var cookieStart = document.cookie.indexOf(cookieName);
+    var cookieValue = "";
+    if (cookieStart > -1) {
+      var cookieEnd = document.cookie.indexOf(";", cookieStart);
+      if (cookieEnd == -1) {
+        cookieEnd = document.cookie.length;
+      }
+      cookieValue = decodeURIComponent(
+        document.cookie.substring(cookieStart + cookieName.length, cookieEnd)
+      );
+    }
+    return cookieValue;
+  },
   remove: function(attr) {
     this.set(attr, "", -1);
   }
