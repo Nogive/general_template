@@ -27,12 +27,9 @@ function cordovaInitialize(that) {
     false
   );
 }
-
 /**
  * 拍照
  * @method takePhoto
- * @param onSuccess 拍照成功的回调
- * @param onFail  拍照失败的回调
  * @param option 拍照相关配置
  * @example option:{
  *  quality: 50,  //照片质量
@@ -45,12 +42,14 @@ function cordovaInitialize(that) {
     correctOrientation: true // Corrects Android orientation quirks
  * }
  */
-function takePhoto(onSuccess, onFail, option) {
-  if (!navigator.camera) {
-    Toast("Camera API not supported !");
-    return;
-  }
-  let options = {
+/**
+ * 拍照上传
+ * @param watermark 水印信息
+ * @example watermark:["2016.05.06 周六·晴转多云 16℃"]
+ * @return getFullUrl() //x.waiqin.co/ding/index.html?corpId=ding7bc2e52b22faf4b2
+ */
+function takePhoto(watermark) {
+  var options = {
     quality: 50,
     destinationType: navigator.camera.DestinationType.FILE_URI,
     sourceType: navigator.camera.PictureSourceType.CAMERA,
@@ -60,38 +59,66 @@ function takePhoto(onSuccess, onFail, option) {
     saveToPhotoAlbum: false, //不允许保存到相册
     correctOrientation: true // Corrects Android orientation quirks
   };
-  if (option) {
-    options.waterMarker = option;
+  if (watermark) {
+    options.waterMarker = watermark;
   }
-  let successCallback = function(imgUri) {
-    onSuccess(imgUri);
-  };
-  let errorCallback = function(message) {
-    onFail(message);
-  };
-  navigator.camera.getPicture(successCallback, errorCallback, options);
+  return new Promise((resolve, reject) => {
+    navigator.camera.getPicture(
+      imgUri => {
+        resolve(imgUri);
+      },
+      errMsg => {
+        reject(errMsg);
+      },
+      options
+    );
+  });
 }
 /**
- * 开始定位
- * @method startLocate
- * @param successCallback 定位成功的回调
- * @param errorCallback  定位失败的回调
- * @param option 定位相关配置
+ * 连续获取一组位置，返回精度最低的
+ * @param interval 间隔多少时间返回一组数据 ms 默认200
+ * @return result {}
+ * @example result:{
+      lng : Number,  经度
+      lat : Number,  纬度
+      arc : Number, 实际定位经度半径
+      adr : String, 格式化地址
+      prv : String, 省
+      cty : String, 市
+      dist : String, 区
+      time : timestamp, 时间
+      lot:Number
+    }
  */
-function startLocate(successCallback, errorCallback, option) {
-  if (option) {
-    cordova.exec(successCallback, errorCallback, "Location", "start", [option]);
-  } else {
-    cordova.exec(successCallback, errorCallback, "Location", "start", []);
-  }
+function onLocation(interval) {
+  var results = [];
+  var time = interval ? interval : 200;
+  return new Promise((resolve, reject) => {
+    cordova.exec(
+      data => {
+        if (results.length < 5) {
+          results.push(data);
+        } else {
+          stopCordovaLocate();
+          results.sort((a, b) => {
+            return a - b;
+          });
+          resolve(results[0]);
+        }
+      },
+      err => {
+        reject(err);
+      },
+      "Location",
+      "start",
+      [interval]
+    );
+  });
 }
-/**
- * 结束定位
- * @method startLocate
- */
-function stopLocate() {
+function stopCordovaLocate(sceneId) {
   cordova.exec(function() {}, function() {}, "Location", "stop", []);
 }
+
 /**
  * 阻止设备自带返回行为
  * @method stopBehaviorOfBackButton
@@ -176,8 +203,7 @@ function savePhoto(options) {
 export {
   cordovaInitialize,
   takePhoto,
-  startLocate,
-  stopLocate,
+  onLocation,
   stopBehaviorOfBackButton,
   restoreBackButton,
   definedBackbehavior,
