@@ -11,8 +11,10 @@
 import { uploadImageFromCamera} from "@/common/js/ding";
 import {callApi} from "@/server/axios";
 import {account} from "@/server/api";
+import basePage from "@components/base/basePage"
 
 export default {
+  extends:basePage,
   name: 'HelloWorld',
   data () {
     return {
